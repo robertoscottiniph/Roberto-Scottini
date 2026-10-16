@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Audio Risposte</title>
+  <meta name="theme-color" content="#075e54">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>🎙️ Audio Risposte</h1>
+    <p class="sub">Carica o condividi un vocale di WhatsApp e rispondi alle domande sull'argomento</p>
+  </header>
+
+  <main>
+    <section class="card" id="step-audio">
+      <h2>1. Il vocale</h2>
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="audio/*,.opus,.ogg,.m4a,.mp3,.wav,.aac">
+        <span id="drop-label">Tocca per scegliere un audio<br><small>oppure da WhatsApp: tieni premuto il vocale → Condividi → Audio Risposte</small></span>
+      </label>
+      <audio id="player" controls hidden></audio>
+      <div class="row">
+        <select id="tone" aria-label="Tono delle risposte">
+          <option value="naturale">Tono naturale</option>
+          <option value="amichevole e informale">Amichevole</option>
+          <option value="formale e professionale">Formale</option>
+          <option value="breve e diretto">Breve</option>
+        </select>
+        <button id="go" disabled>Trascrivi e analizza</button>
+      </div>
+      <p class="status" id="status" role="status"></p>
+    </section>
+
+    <section class="card" id="step-result" hidden>
+      <h2>2. Di cosa parla</h2>
+      <p class="topic" id="topic"></p>
+      <p id="summary"></p>
+      <details>
+        <summary>Trascrizione</summary>
+        <textarea id="transcript" rows="6"></textarea>
+        <button class="small secondary" id="reanalyze">Rianalizza con il testo corretto</button>
+      </details>
+    </section>
+
+    <section class="card" id="step-questions" hidden>
+      <h2>3. Domande nel vocale</h2>
+      <div id="questions"></div>
+      <h3>Risposta completa</h3>
+      <div class="reply" id="full-reply"></div>
+    </section>
+
+    <section class="card" id="step-chat" hidden>
+      <h2>4. Chiedi quello che vuoi</h2>
+      <p class="hint">Es. "Rispondi che accetto ma solo dopo le 18", "Cosa mi sta chiedendo esattamente?", "Fammi una risposta più corta"</p>
+      <div id="chat"></div>
+      <form id="ask-form" class="row">
+        <input id="question" autocomplete="off" placeholder="Scrivi una domanda o una richiesta…">
+        <button id="mic" type="button" class="secondary" title="Detta la domanda" aria-label="Detta la domanda">🎤</button>
+        <button type="submit">Invia</button>
+      </form>
+    </section>
+  </main>
+
+  <template id="reply-tpl">
+    <div class="reply">
+      <p class="text"></p>
+      <div class="actions">
+        <button class="small secondary copy">Copia</button>
+        <a class="small button wa" target="_blank" rel="noopener">Invia su WhatsApp</a>
+      </div>
+    </div>
+  </template>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

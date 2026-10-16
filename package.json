@@ -1,0 +1,19 @@
+{
+  "name": "audio-risposte",
+  "version": "1.0.0",
+  "description": "Ascolta un vocale di WhatsApp, trascrivilo e rispondi alle domande in base all'argomento",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
+  }
+}
