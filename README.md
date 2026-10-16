@@ -15,7 +15,13 @@ App web (installabile sul telefono) che prende un **vocale di WhatsApp**, lo tra
 
 Puoi scegliere il tono (naturale, amichevole, formale, breve). Se manca un'informazione che solo tu conosci, la risposta usa un segnaposto tipo `[orario]` invece di inventare.
 
-## Avvio
+## Pubblicazione in un clic
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/robertoscottiniph/Roberto-Scottini)
+
+Premi il pulsante, entra con GitHub, incolla le due chiavi (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`) e premi *Deploy*. La configurazione è in `render.yaml`.
+
+## Avvio in locale
 
 Serve Node.js 20 o più recente.
 
