@@ -171,6 +171,100 @@ $("ask-form").addEventListener("submit", async (e) => {
   }
 });
 
+// --- Modalità "Ascolta": registra dal microfono mentre il vocale suona -----
+const SILENCE_STOP_MS = 3500; // silenzio dopo il vocale prima di fermarsi
+const MAX_LISTEN_MS = 10 * 60 * 1000;
+let listening = null;
+
+function fmtTime(ms) {
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
+async function startListening() {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+    return setStatus("Questo browser non può registrare dal microfono. Usa Chrome.", true);
+  }
+  let stream;
+  try {
+    // Niente cancellazione dell'eco/rumore: altrimenti il telefono "toglie"
+    // proprio l'audio che esce dall'altoparlante.
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true },
+    });
+  } catch {
+    return setStatus("Serve il permesso per il microfono.", true);
+  }
+
+  const type = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].find((t) => MediaRecorder.isTypeSupported(t));
+  const recorder = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+  const chunks = [];
+  recorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+
+  // Livello audio per il misuratore e per lo stop automatico
+  const ctx = new AudioContext();
+  const analyser = ctx.createAnalyser();
+  analyser.fftSize = 1024;
+  ctx.createMediaStreamSource(stream).connect(analyser);
+  const buf = new Float32Array(analyser.fftSize);
+
+  const started = performance.now();
+  let noiseFloor = 0, samples = 0, heard = false, lastSound = started;
+
+  listening = { recorder, stream, ctx, timer: null };
+  listening.timer = setInterval(() => {
+    analyser.getFloatTimeDomainData(buf);
+    const rms = Math.sqrt(buf.reduce((s, v) => s + v * v, 0) / buf.length);
+    const now = performance.now();
+    if (now - started < 600) {
+      noiseFloor = (noiseFloor * samples + rms) / ++samples; // rumore di fondo iniziale
+    } else if (rms > Math.max(0.015, Math.min(noiseFloor * 3, 0.06))) {
+      if (!heard) $("listen-hint").textContent = "Sto ascoltando…";
+      heard = true;
+      lastSound = now;
+    }
+    $("meter-bar").style.width = `${Math.min(100, rms * 400)}%`;
+    $("listen-time").textContent = fmtTime(now - started);
+    if ((heard && now - lastSound > SILENCE_STOP_MS) || now - started > MAX_LISTEN_MS) stopListening();
+  }, 100);
+
+  recorder.onstop = () => {
+    const mime = recorder.mimeType || "audio/webm";
+    const ext = mime.includes("mp4") ? "m4a" : "webm";
+    const blob = new Blob(chunks, { type: mime });
+    resetListenUI();
+    if (!heard || blob.size < 2000) return setStatus("Non ho sentito nessun audio. Alza il volume e riprova.", true);
+    useFile(new File([blob], `ascoltato.${ext}`, { type: mime }));
+    run();
+  };
+
+  recorder.start(1000);
+  $("listen").textContent = "⏹️ Ferma";
+  $("listen").classList.add("recording");
+  $("listen-hint").textContent = "Fai partire il vocale su WhatsApp con l'altoparlante";
+  $("listen-live").hidden = false;
+  setStatus("");
+}
+
+function stopListening() {
+  if (!listening) return;
+  const { recorder, stream, ctx, timer } = listening;
+  listening = null;
+  clearInterval(timer);
+  stream.getTracks().forEach((t) => t.stop());
+  ctx.close();
+  if (recorder.state !== "inactive") recorder.stop();
+}
+
+function resetListenUI() {
+  $("listen").textContent = "🎧 Ascolta mentre lo senti";
+  $("listen").classList.remove("recording");
+  $("listen-live").hidden = true;
+  $("meter-bar").style.width = "0";
+}
+
+$("listen").addEventListener("click", () => (listening ? stopListening() : startListening()));
+
 // Dettatura della domanda (se il browser la supporta)
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 if (Recognition) {

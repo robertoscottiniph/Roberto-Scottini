@@ -19,6 +19,15 @@
   <main>
     <section class="card" id="step-audio">
       <h2>1. Il vocale</h2>
+      <div class="listen" id="listen-box">
+        <button id="listen" type="button" class="big">🎧 Ascolta mentre lo senti</button>
+        <div id="listen-live" hidden>
+          <div class="meter"><div id="meter-bar"></div></div>
+          <p class="listen-info"><span id="listen-time">0:00</span> · <span id="listen-hint">Fai partire il vocale su WhatsApp con l'altoparlante</span></p>
+        </div>
+        <p class="hint">Metti WhatsApp e questa app a schermo diviso, tocca il pulsante e fai partire il vocale ad alto volume (senza cuffie). Mi fermo da solo quando il vocale finisce.</p>
+      </div>
+      <p class="or">oppure</p>
       <label class="drop" id="drop">
         <input type="file" id="file" accept="audio/*,.opus,.ogg,.m4a,.mp3,.wav,.aac">
         <span id="drop-label">Tocca per scegliere un audio<br><small>oppure da WhatsApp: tieni premuto il vocale → Condividi → Audio Risposte</small></span>

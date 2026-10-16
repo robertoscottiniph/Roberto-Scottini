@@ -100,4 +100,12 @@ button.secondary { background: transparent; color: var(--accent); }
 }
 #chat .reply { margin-bottom: 6px; }
 details summary { cursor: pointer; color: var(--muted); margin-top: 8px; }
+.listen { text-align: center; }
+.listen .hint { margin: 10px 0 0; }
+button.big { width: 100%; padding: 16px; font-size: 1.1rem; font-weight: 600; }
+.meter { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 12px; }
+#meter-bar { height: 100%; width: 0; background: var(--accent-2); transition: width .1s; }
+.listen-info { margin: 8px 0 0; font-size: .9rem; }
+#listen-time { font-variant-numeric: tabular-nums; font-weight: 600; }
+.or { text-align: center; color: var(--muted); margin: 12px 0; font-size: .85rem; }
 .recording { background: #d93025 !important; color: #fff !important; border-color: #d93025 !important; }
