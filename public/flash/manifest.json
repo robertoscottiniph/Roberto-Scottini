@@ -2,7 +2,7 @@
   "name": "Flash Ritmo",
   "short_name": "Flash Ritmo",
   "description": "Il flash del telefono lampeggia a tempo di musica",
-  "start_url": "./",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

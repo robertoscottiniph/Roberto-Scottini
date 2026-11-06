@@ -1,7 +1,7 @@
 // Service worker di Flash Ritmo: rende l'app installabile e la fa funzionare
 // anche senza connessione (prima prova la rete, se manca usa la copia salvata).
-const CACHE = "flash-ritmo-v1";
-const FILES = ["./", "index.html", "app.js", "beat.js", "torch.js", "style.css", "manifest.json", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"];
+const CACHE = "flash-ritmo-v2";
+const FILES = ["index.html", "app.js", "beat.js", "torch.js", "style.css", "manifest.json", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
