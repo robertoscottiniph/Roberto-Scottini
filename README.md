@@ -61,7 +61,18 @@ Per comparire nel menu *Condividi* l'app deve essere **installata** e servita in
 
 Seconda app nello stesso progetto, in `public/flash/`: **il flash del telefono si accende e si spegne a tempo di musica**. Non usa il server né chiavi: funziona tutta nel telefono, anche senza connessione una volta installata.
 
-Si apre all'indirizzo **`/flash/`** del sito pubblicato (es. `https://tuo-sito.onrender.com/flash/`, in locale `http://localhost:3000/flash/`). Con **Chrome su Android** → menu ⋮ → **Installa app** compare come app separata.
+### Come aprirla
+
+**Pagina GitHub gratuita** (la via più semplice: non servono server né chiavi):
+
+1. Apri https://github.com/robertoscottiniph/Roberto-Scottini/settings/pages
+2. In *Build and deployment* → *Source* scegli **Deploy from a branch**.
+3. Come *Branch* scegli quello che contiene `public/flash/` (ora `claude/beautiful-euler-9nkmkp`), cartella **/ (root)**, poi **Save**.
+4. Dopo un paio di minuti l'app è su **https://robertoscottiniph.github.io/Roberto-Scottini/public/flash/**
+
+In alternativa, se il server è pubblicato (Render ecc.), l'app è all'indirizzo del servizio seguito da `/flash/`: per esempio l'indirizzo `.onrender.com` che ti mostra Render, più `/flash/`. In locale: `http://localhost:3000/flash/`.
+
+Con **Chrome su Android** → menu ⋮ → **Installa app** compare come app separata.
 
 - **Musica da**:
   - **🎤 Microfono**: ascolta la musica che suona vicino (cassa, TV, un altro telefono, oppure Spotify su questo stesso telefono con l'altoparlante).
