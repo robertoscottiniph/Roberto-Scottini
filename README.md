@@ -82,7 +82,10 @@ Con **Chrome su Android** → menu ⋮ → **Installa app** compare come app sep
   - **🔊 Segue il volume**: il flash resta acceso quando la musica è forte.
 - **Sensibilità**: più alta = più lampi. **Reagisci a → Solo i bassi** segue solo la cassa (meglio con casse potenti; con l'altoparlante del telefono lascia *Tutta la musica*, perché i bassi non escono).
 - **Schermo**: fa lampeggiare anche lo schermo, in bianco o a colori.
-- **Avanzate → Ritardo del lampo**: se il flash arriva prima della musica (capita con le casse Bluetooth) aumentalo. **Prova il flash** controlla che il flash risponda.
+- **Senza ritardo**: il flash ha bisogno di qualche centesimo di secondo per accendersi, quindi l'app lo comanda **in anticipo**:
+  - con un **brano dal telefono** analizza la musica 0,3 s prima di fartela sentire, così ogni lampo cade esattamente sul colpo;
+  - con il **microfono** impara il ritmo (BPM e posizione dei battiti) e prevede il battito successivo: dopo 4-5 secondi compare **🔒 a tempo** e il lampo cade sul battito invece che dopo.
+- **Avanzate → Regola sincronia**: ritocco fine se su un telefono il lampo arriva ancora un po' prima (sposta a destra, utile con le casse Bluetooth) o dopo (a sinistra). **Prova il flash** misura quanto ci mette il flash ad accendersi e l'app se lo ricorda.
 - Mostra i **BPM** stimati e tiene lo schermo acceso mentre è attiva.
 
 Note:
@@ -90,7 +93,7 @@ Note:
 - Il flash si comanda dal browser solo con **Chrome su Android**, e serve **HTTPS** (o `localhost`). Il permesso della fotocamera serve solo per accendere il flash: non viene registrata nessuna immagine.
 - **iPhone**: Safari di solito non permette alle pagine web di comandare il flash; in quel caso l'app lo dice e fa lampeggiare lo schermo.
 - L'app deve restare aperta e in primo piano: quando va in secondo piano Android spegne la fotocamera, e con lei il flash.
-- Con il microfono il lampo arriva qualche centesimo di secondo dopo il colpo (il tempo di sentirlo).
+- Con il microfono, nei primi secondi (prima di **🔒 a tempo**) e nella modalità *Segue il volume* il lampo arriva qualche centesimo di secondo dopo il colpo: l'app deve prima sentirlo. Funziona meglio con musica dal tempo regolare.
 - ⚠️ Le luci lampeggianti possono essere pericolose per chi soffre di epilessia fotosensibile.
 
 ## Struttura
@@ -106,7 +109,7 @@ public/sw.js         Service worker (necessario per l'installazione)
 public/flash/        Flash Ritmo (solo lato browser)
   index.html         Interfaccia
   app.js             Avvio, impostazioni, lampi, brani, schermo acceso
-  beat.js            Rilevamento dei battiti dallo spettro audio
+  beat.js            Rilevamento dei battiti e previsione del ritmo
   torch.js           Accensione del flash tramite la fotocamera posteriore
   sw.js              Service worker con copia offline
 ```

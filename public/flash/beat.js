@@ -16,6 +16,9 @@ const MIN_GAP_MS = 140; // distanza minima tra due battiti (~430 al minuto)
 const BPM_WINDOW_MS = 10000;
 const RING = 16;
 
+/** Ritardo medio con cui process() segnala un colpo rispetto al suo inizio (misurato). */
+export const ANALYSIS_DELAY_MS = 18;
+
 export class BeatDetector {
   /**
    * @param {number} sampleRate frequenza di campionamento dell'AudioContext
@@ -179,4 +182,112 @@ export class BeatDetector {
 
 function clamp01(x) {
   return x < 0 ? 0 : x > 1 ? 1 : x;
+}
+
+// ---------------------------------------------------------------------------
+// Orologio del ritmo: dai colpi rilevati ricava periodo e fase dei battiti e
+// prevede quando arriverà il prossimo, così il flash può essere comandato in
+// anticipo e accendersi esattamente sul battito invece che dopo.
+// ---------------------------------------------------------------------------
+const CLOCK_WINDOW_MS = 6000; // colpi usati per il calcolo
+const MATCH_TOL = 0.12; // tolleranza attorno a un battito (frazione del periodo)
+
+export class BeatClock {
+  constructor() {
+    this.onsets = []; // istanti dei colpi (ms, già corretti del ritardo)
+    this.period = 0; // ms tra due battiti
+    this.anchor = 0; // istante di un battito di riferimento
+    this.lastMatch = -Infinity; // ultimo colpo caduto sulla griglia
+    this.fitted = false;
+  }
+
+  /**
+   * Aggiunge un colpo.
+   * @param {number} t istante in cui il colpo è avvenuto (ms)
+   * @param {number|null} bpm stima grezza dei battiti al minuto (BeatDetector.bpm)
+   */
+  add(t, bpm) {
+    this.onsets.push(t);
+    while (this.onsets.length && t - this.onsets[0] > CLOCK_WINDOW_MS) this.onsets.shift();
+    this.fitted = false;
+    if (!bpm || this.onsets.length < 5) return;
+
+    // Prova il periodo stimato e il doppio (es. 70 BPM letti come 140):
+    // vince quello con più battiti "pieni", a parità quello più veloce.
+    let best = null;
+    for (const mult of [1, 2]) {
+      const fit = this.#fit((60000 / bpm) * mult);
+      if (fit && (!best || fit.score > best.score + 0.12)) best = fit;
+    }
+    if (!best || best.matched < 5 || best.score < 0.6) return;
+    this.period = best.period;
+    this.anchor = best.anchor;
+    this.lastMatch = best.lastMatch;
+    this.fitted = true;
+  }
+
+  /** true se il ritmo è agganciato e la musica sta ancora battendo. */
+  isLocked(now) {
+    return this.fitted && now - this.lastMatch < Math.max(2000, 3 * this.period);
+  }
+
+  /** Il primo battito previsto dopo l'istante t (ms), o null. */
+  next(t) {
+    if (!this.fitted) return null;
+    return this.anchor + Math.ceil((t - this.anchor) / this.period) * this.period;
+  }
+
+  #fit(p0) {
+    const O = this.onsets;
+    const tol = MATCH_TOL * p0;
+    const near = (o, a) => {
+      const k = Math.round((o - a) / p0);
+      return { k, e: o - a - k * p0 };
+    };
+    // Colpo di riferimento: quello con cui si allineano più colpi
+    let a0 = O[0];
+    let bestN = -1;
+    for (const a of O) {
+      let n = 0;
+      for (const o of O) if (Math.abs(near(o, a).e) < tol) n++;
+      if (n >= bestN) {
+        bestN = n;
+        a0 = a;
+      }
+    }
+    // Retta dei minimi quadrati istante = anchor + k · periodo sui colpi allineati
+    const pts = [];
+    for (const o of O) {
+      const { k, e } = near(o, a0);
+      if (Math.abs(e) < tol) pts.push([k, o]);
+    }
+    const ks = new Set(pts.map((p) => p[0]));
+    if (ks.size < 4) return null;
+    let mk = 0;
+    let mo = 0;
+    for (const [k, o] of pts) {
+      mk += k;
+      mo += o;
+    }
+    mk /= pts.length;
+    mo /= pts.length;
+    let cov = 0;
+    let vk = 0;
+    for (const [k, o] of pts) {
+      cov += (k - mk) * (o - mo);
+      vk += (k - mk) ** 2;
+    }
+    let period = vk ? cov / vk : p0;
+    if (Math.abs(period - p0) > 0.06 * p0) period = p0;
+    const anchor = mo - period * mk;
+    const kMin = Math.min(...ks);
+    const kMax = Math.max(...ks);
+    return {
+      period,
+      anchor,
+      matched: ks.size,
+      score: ks.size / (kMax - kMin + 1), // quota di battiti con un colpo
+      lastMatch: Math.max(...pts.map((p) => p[1])),
+    };
+  }
 }

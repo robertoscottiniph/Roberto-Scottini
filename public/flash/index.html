@@ -27,7 +27,7 @@
         <span id="power-label">Avvia</span>
       </button>
       <div class="meter" aria-hidden="true"><div id="meter-bar"></div><div id="meter-thr"></div></div>
-      <p class="readout"><span id="bpm">— BPM</span> · <span id="count">0 lampi</span></p>
+      <p class="readout"><span id="bpm">— BPM</span> · <span id="count">0 lampi</span><span id="lock"></span></p>
       <p class="status" id="status" role="status"></p>
     </section>
 
@@ -81,10 +81,10 @@
     <details class="card">
       <summary>Avanzate</summary>
       <label class="slider">
-        <span>Ritardo del lampo <output id="delay-out"></output></span>
-        <input type="range" id="delay" min="0" max="400" step="10">
+        <span>Regola sincronia <output id="sync-out"></output></span>
+        <input type="range" id="sync" min="-150" max="150" step="5">
       </label>
-      <p class="hint">Se il flash arriva prima della musica (succede con le casse Bluetooth), aumenta il ritardo.</p>
+      <p class="hint">L'app anticipa da sola il flash del tempo che gli serve per accendersi. Se su questo telefono il lampo arriva ancora un po' prima del colpo sposta verso destra, se arriva dopo verso sinistra. Con le casse Bluetooth di solito serve spostare a destra.</p>
       <button id="test" type="button" class="secondary">Prova il flash</button>
     </details>
 
