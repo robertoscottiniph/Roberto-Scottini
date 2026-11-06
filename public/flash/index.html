@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Flash Ritmo</title>
+  <meta name="description" content="Il flash del telefono lampeggia a tempo di musica">
+  <meta name="theme-color" content="#0d0b14">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="screen-flash" aria-hidden="true"></div>
+  <video id="cam" muted playsinline aria-hidden="true"></video>
+
+  <header>
+    <h1>🔦 Flash Ritmo</h1>
+    <p class="sub">Il flash del telefono lampeggia a tempo di musica</p>
+  </header>
+
+  <main>
+    <section class="stage">
+      <button id="power" class="lamp" type="button" aria-pressed="false">
+        <span class="lamp-icon" aria-hidden="true">⚡</span>
+        <span id="power-label">Avvia</span>
+      </button>
+      <div class="meter" aria-hidden="true"><div id="meter-bar"></div><div id="meter-thr"></div></div>
+      <p class="readout"><span id="bpm">— BPM</span> · <span id="count">0 lampi</span></p>
+      <p class="status" id="status" role="status"></p>
+    </section>
+
+    <section class="card">
+      <h2>Musica da</h2>
+      <div class="seg" data-setting="source" role="radiogroup" aria-label="Sorgente della musica">
+        <button type="button" role="radio" data-value="mic">🎤 Microfono</button>
+        <button type="button" role="radio" data-value="file">🎵 Brano</button>
+      </div>
+      <p class="hint" data-show="source=mic">Fai suonare la musica vicino al telefono: una cassa, la TV, un altro telefono, oppure Spotify su questo telefono con l'altoparlante.</p>
+      <div data-show="source=file">
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept="audio/*" multiple>
+          <span id="drop-label">Tocca per scegliere uno o più brani dal telefono</span>
+        </label>
+        <audio id="player" controls hidden></audio>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Effetto</h2>
+      <div class="seg" data-setting="mode" role="radiogroup" aria-label="Effetto">
+        <button type="button" role="radio" data-value="beat">⚡ Lampo sul battito</button>
+        <button type="button" role="radio" data-value="volume">🔊 Segue il volume</button>
+      </div>
+      <label class="slider">
+        <span>Sensibilità <output id="sensitivity-out"></output></span>
+        <input type="range" id="sensitivity" min="0" max="100" step="5">
+      </label>
+      <label class="slider" data-show="mode=beat">
+        <span>Durata del lampo <output id="duration-out"></output></span>
+        <input type="range" id="duration" min="30" max="300" step="10">
+      </label>
+      <label class="field">
+        <span>Reagisci a</span>
+        <select id="focus">
+          <option value="all">Tutta la musica</option>
+          <option value="bass">Solo i bassi (cassa)</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Schermo</span>
+        <select id="screen">
+          <option value="off">Non lampeggia</option>
+          <option value="white">Lampeggia bianco</option>
+          <option value="color">Lampeggia a colori</option>
+        </select>
+      </label>
+    </section>
+
+    <details class="card">
+      <summary>Avanzate</summary>
+      <label class="slider">
+        <span>Ritardo del lampo <output id="delay-out"></output></span>
+        <input type="range" id="delay" min="0" max="400" step="10">
+      </label>
+      <p class="hint">Se il flash arriva prima della musica (succede con le casse Bluetooth), aumenta il ritardo.</p>
+      <button id="test" type="button" class="secondary">Prova il flash</button>
+    </details>
+
+    <p class="note">⚠️ Le luci lampeggianti possono dare fastidio o essere pericolose per chi soffre di epilessia fotosensibile. Tenere il flash acceso a lungo consuma batteria e scalda il telefono.</p>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

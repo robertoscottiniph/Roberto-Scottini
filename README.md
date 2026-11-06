@@ -57,6 +57,31 @@ Per comparire nel menu *Condividi* l'app deve essere **installata** e servita in
 - Il microfono richiede HTTPS (o `localhost`).
 - **iPhone**: lo schermo diviso non esiste e Safari smette di registrare quando passi a WhatsApp. Funziona solo se il vocale suona da un altro dispositivo.
 
+## 🔦 Flash Ritmo
+
+Seconda app nello stesso progetto, in `public/flash/`: **il flash del telefono si accende e si spegne a tempo di musica**. Non usa il server né chiavi: funziona tutta nel telefono, anche senza connessione una volta installata.
+
+Si apre all'indirizzo **`/flash/`** del sito pubblicato (es. `https://tuo-sito.onrender.com/flash/`, in locale `http://localhost:3000/flash/`). Con **Chrome su Android** → menu ⋮ → **Installa app** compare come app separata.
+
+- **Musica da**:
+  - **🎤 Microfono**: ascolta la musica che suona vicino (cassa, TV, un altro telefono, oppure Spotify su questo stesso telefono con l'altoparlante).
+  - **🎵 Brano**: scegli uno o più brani dal telefono e l'app li riproduce lei stessa (analisi più precisa).
+- **Effetto**:
+  - **⚡ Lampo sul battito**: un lampo per ogni colpo (cassa, rullante…). Puoi regolare la durata del lampo.
+  - **🔊 Segue il volume**: il flash resta acceso quando la musica è forte.
+- **Sensibilità**: più alta = più lampi. **Reagisci a → Solo i bassi** segue solo la cassa (meglio con casse potenti; con l'altoparlante del telefono lascia *Tutta la musica*, perché i bassi non escono).
+- **Schermo**: fa lampeggiare anche lo schermo, in bianco o a colori.
+- **Avanzate → Ritardo del lampo**: se il flash arriva prima della musica (capita con le casse Bluetooth) aumentalo. **Prova il flash** controlla che il flash risponda.
+- Mostra i **BPM** stimati e tiene lo schermo acceso mentre è attiva.
+
+Note:
+
+- Il flash si comanda dal browser solo con **Chrome su Android**, e serve **HTTPS** (o `localhost`). Il permesso della fotocamera serve solo per accendere il flash: non viene registrata nessuna immagine.
+- **iPhone**: Safari di solito non permette alle pagine web di comandare il flash; in quel caso l'app lo dice e fa lampeggiare lo schermo.
+- L'app deve restare aperta e in primo piano: quando va in secondo piano Android spegne la fotocamera, e con lei il flash.
+- Con il microfono il lampo arriva qualche centesimo di secondo dopo il colpo (il tempo di sentirlo).
+- ⚠️ Le luci lampeggianti possono essere pericolose per chi soffre di epilessia fotosensibile.
+
 ## Struttura
 
 ```
@@ -66,6 +91,13 @@ public/app.js        Logica della pagina
 public/style.css     Stile (chiaro/scuro, stile WhatsApp)
 public/manifest.json Manifest PWA con "share_target" per ricevere gli audio
 public/sw.js         Service worker (necessario per l'installazione)
+
+public/flash/        Flash Ritmo (solo lato browser)
+  index.html         Interfaccia
+  app.js             Avvio, impostazioni, lampi, brani, schermo acceso
+  beat.js            Rilevamento dei battiti dallo spettro audio
+  torch.js           Accensione del flash tramite la fotocamera posteriore
+  sw.js              Service worker con copia offline
 ```
 
 Endpoint: `POST /share-target`, `GET /api/shared/:id`, `POST /api/transcribe`, `POST /api/analyze`, `POST /api/ask`.
